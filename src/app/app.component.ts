@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -44,14 +45,46 @@ export class AppComponent implements OnInit {
       }
     });
   }
+
+  minhaObservable(nome: string) : Observable<string> {
+    return new Observable(subscriber => {
+      if(nome === 'Cristiano') {
+        subscriber.next(`Olá ${nome}`);
+        subscriber.next(`Olá de novo ${nome}`);
+        
+        setTimeout(() => {
+          subscriber.next(`Resposta com delay ${nome}`);
+        }, 5000);
+        subscriber.complete();
+
+      } else {
+        subscriber.error('Ops! Deu Erro!');
+      }
+    });
+  }
   
   
   ngOnInit(): void {
-    this.minhaPormise('Cristiano')
-      .then(result => console.log(result));
+    // this.minhaPormise('Cristiano')
+    //   .then(result => console.log(result));
     
-    this.minhaPormise('José')
-      .then(result => console.log(result))
-      .catch(error => console.log(error));
+    // this.minhaPormise('José')
+    //   .then(result => console.log(result))
+    //   .catch(error => console.log(error));
+
+    this.minhaObservable('Cristiano')
+      .subscribe(
+        result => console.log(result),
+        error => console.log(error),
+        () => console.log('Fim!'));
+
+    const observer = {
+      next: valor => console.log('Next: ',valor),
+      error: error => console.log('Error: ', error),
+      complete: () => console.log('Fim!')
+    }
+
+    const obs = this.minhaObservable('Cristiano');
+    obs.subscribe(observer);
   }
 }
