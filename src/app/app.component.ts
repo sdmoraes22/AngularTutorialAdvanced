@@ -31,7 +31,6 @@ import { Observable } from 'rxjs';
 
 export class AppComponent implements OnInit {
   
-  
   title = 'RXJS';
   
   minhaPormise(nome: string) : Promise<string> {
@@ -62,6 +61,36 @@ export class AppComponent implements OnInit {
       }
     });
   }
+
+  usuarioObservable(nome: string, email: string) : Observable<Usuario> {
+    return new Observable(subscriber => {
+      if(nome === 'Admin') {
+        let usuario = new Usuario(nome, email);
+
+        setTimeout(() => {
+          subscriber.next(usuario);
+        }, 1000);
+        
+        setTimeout(() => {
+          subscriber.next(usuario);
+        }, 2000);
+
+        setTimeout(() => {
+          subscriber.next(usuario);
+        }, 3000);
+
+        setTimeout(() => {
+          subscriber.next(usuario);
+        }, 4000);
+
+        setTimeout(() => {
+          subscriber.complete();
+        }, 5000);
+      } else {
+        subscriber.error('Ops! Deu Erro!');
+      }
+    });
+  }
   
   
   ngOnInit(): void {
@@ -84,7 +113,28 @@ export class AppComponent implements OnInit {
       complete: () => console.log('Fim!')
     }
 
-    const obs = this.minhaObservable('Cristiano');
-    obs.subscribe(observer);
+    // const obs = this.minhaObservable('Cristiano');
+    // obs.subscribe(observer);
+
+    const obs = this.usuarioObservable('Admin', 'admin@admin.com');
+    const subs = obs.subscribe(observer);
+
+    setTimeout(() => {
+      subs.unsubscribe();
+    }, 3500)
+
   }
+}
+export class Usuario {
+ 
+  constructor(nome: string, email:string) {
+    this.nome = nome;
+    this.email = email;
+    
+  }
+  
+  email: string;
+  nome: string;
+
+  
 }
